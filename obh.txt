@@ -1,0 +1,1575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CozyMind</title>
+    <style>
+        /* --- FONTS & LOCAL FONT STORAGE DECK --- */
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Fredoka:wght@300..700&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+
+        @font-face {
+            font-family: 'ADELIA';
+            src: url('ADELIA.otf') format('opentype'),
+                 url('adelia.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --branding-pink: #F4729D;     
+            --dark-text: #DC6C94;         
+            --pastel-pink: #FFB3C6;       
+            --light-pink: #FFE3EC;        
+            --ice-blue: #E3FAFF;          
+            --light-pastel-blue: #EDFAFF; 
+            --polka-pink: #FFA0B8;        
+            --border-blue: #BCEEFA;       
+            --white: #FFFFFF;
+            --meta-gray: #EAA7C0;
+
+            /* --- UPDATED: CALMING PASTEL CALENDAR TRACKING SCALE --- */
+            --pastel-happy: #FFF9D9;
+            --pastel-cozy: #FFFBE6;
+            --pastel-tired: #E6F3FF;
+            --pastel-awful: #D1E9F9;
+        }
+
+        html, body {
+            background-color: #FFF5F8;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- ENFORCED PORTRAIT PHONE VIEWPORT CONTAINER --- */
+        .viewport-wrapper {
+            width: 100%;
+            height: 100%;
+            max-width: 540px; 
+            aspect-ratio: 1080 / 1920;
+            background-color: var(--white);
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Nunito', sans-serif;
+            color: var(--dark-text); 
+            overscroll-behavior: none; 
+            box-shadow: 0 15px 50px rgba(220, 108, 148, 0.15);
+        }
+
+        @media (max-height: 900px) and (min-width: 600px) {
+            .viewport-wrapper {
+                height: 85vh;
+                width: auto;
+            }
+        }
+
+        .app-screen, .bottom-nav-bar, .onboarding-controls {
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .app-screen {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: none;
+            flex-direction: column;
+            padding: 50px 32px 125px 32px; 
+            background-color: var(--white);
+            z-index: 1;
+        }
+
+        .app-screen.active {
+            display: flex;
+            z-index: 10;
+        }
+
+        .app-title-adelia {
+            font-family: 'ADELIA', 'Fredoka One', sans-serif;
+            color: var(--branding-pink); 
+            text-transform: none;
+            letter-spacing: -0.02em;     
+            text-align: center;
+        }
+
+        .cozy-btn {
+            background-color: var(--branding-pink);
+            color: var(--white);
+            font-family: 'Fredoka One', sans-serif;
+            border: none;
+            border-radius: 25px;
+            padding: 18px 24px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 6px 0px var(--dark-text);
+            transition: all 0.1s ease;
+            text-align: center;
+            width: 100%;
+            touch-action: manipulation;
+            display: block;
+        }
+
+        .cozy-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 3px 0px var(--dark-text);
+        }
+
+        /* Centered & Enlarged Character Base Wrapper Container */
+        .avatar-blink-container {
+            width: 88%;
+            aspect-ratio: 1.1;
+            margin: 0 auto 35px auto;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            filter: drop-shadow(0 10px 15px rgba(220, 108, 148, 0.25));
+            animation: floatBounce 3.5s ease-in-out infinite; 
+        }
+
+        .avatar-layer {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .avatar-layer.normal {
+            position: relative;
+            z-index: 1;
+        }
+
+        .avatar-layer.blinking {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            opacity: 0;
+            animation: crispBlinkLoop 4.2s steps(1) infinite;
+        }
+
+        @keyframes floatBounce {
+            0% { transform: scale(1.05) translateY(0px); }
+            50% { transform: scale(1.05) translateY(-8px); }
+            100% { transform: scale(1.05) translateY(0px); }
+        }
+
+        @keyframes crispBlinkLoop {
+            0%, 94%, 98%, 100% { opacity: 0; }
+            55%, 57% { opacity: 1; }
+        }
+
+        .placeholder-illustration {
+            width: 100%;
+            aspect-ratio: 1.6;
+            background-color: var(--ice-blue);
+            border: 3px dashed var(--border-blue);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--dark-text);
+            font-family: 'Fredoka One', sans-serif;
+            font-size: 1.15rem;
+            text-align: center;
+            padding: 24px;
+            margin-bottom: 35px;
+        }
+
+        /* ==========================================
+           PAGE 1: ONBOARDING SCREEN
+           ========================================== */
+        #screen-onboarding {
+            justify-content: space-between;
+            background-image: radial-gradient(var(--light-pink) 15%, transparent 16%);
+            background-size: 24px 24px;
+            touch-action: pan-y;
+            padding-bottom: 50px;
+        }
+
+        .onboarding-slider {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        .slide-content {
+            display: none;
+            text-align: center;
+            animation: fadeIn 0.3s ease-in-out forwards;
+            width: 100%;
+        }
+
+        .slide-content.active {
+            display: block;
+        }
+
+        .onboarding-slider h2 {
+            font-size: 2.3rem;
+            margin-bottom: 18px;
+            line-height: 1.25;
+        }
+
+        .onboarding-slider p {
+            color: var(--dark-text);
+            font-size: 1.1rem;
+            line-height: 1.6;
+            padding: 0 20px; 
+            text-align: center;
+        }
+
+        .onboarding-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-top: 20px;
+            padding: 0 5px;
+        }
+
+        .dot-indicators {
+            display: flex;
+            gap: 10px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--light-pink);
+            transition: background-color 0.3s ease, width 0.3s ease;
+        }
+
+        .dot.active {
+            background-color: var(--branding-pink);
+            width: 24px;
+            border-radius: 5px;
+        }
+
+        .nav-arrow-btn {
+            background-color: var(--white);
+            border: 3px solid var(--border-blue);
+            color: var(--dark-text);
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            font-family: 'Fredoka One', sans-serif;
+            font-size: 1.4rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 0 var(--border-blue);
+            touch-action: manipulation;
+        }
+
+        /* ==========================================
+           PAGE 2: LOGIN SCREEN
+           ========================================== */
+        #screen-login {
+            justify-content: center;
+            gap: 35px;
+        }
+
+        .login-header {
+            text-align: center;
+        }
+
+        .login-header span {
+            font-size: 3rem !important;
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+
+        .login-header h2 {
+            font-family: 'Fredoka One', sans-serif;
+            color: var(--branding-pink);
+            font-size: 2.2rem;
+            text-align: center;
+        }
+
+        .login-card {
+            background-color: var(--white);
+            border: 3px dashed var(--pastel-pink);
+            border-radius: 30px;
+            padding: 40px 24px;
+            box-shadow: 0 10px 25px rgba(244, 114, 157, 0.05);
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 22px;
+        }
+
+        .cozy-input {
+            width: 100%;
+            padding: 18px 22px;
+            border: 2.5px solid var(--light-pink);
+            border-radius: 18px;
+            font-size: 1.1rem;
+            color: var(--dark-text);
+            outline: none;
+            background-color: #FFFBFD;
+            -webkit-appearance: none;
+            user-select: text !important;
+            -webkit-user-select: text !important; 
+        }
+
+        .cozy-input::placeholder {
+            color: var(--meta-gray);
+            opacity: 0.8;
+        }
+
+        .login-links {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            margin-top: 24px;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        .login-links a {
+            color: var(--dark-text);
+            text-decoration: none;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        /* ==========================================
+           PAGE 3: HOME SCREEN (MAIN APP SANCTUARY)
+           ========================================== */
+        #screen-home {
+            padding: 40px 0 0 0;
+            background: linear-gradient(180deg, var(--light-pastel-blue) 0%, var(--white) 100%);
+        }
+
+        .home-scroll-container {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 12px 32px 60px 32px; 
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .home-scroll-container::-webkit-scrollbar {
+            width: 0px;
+        }
+
+        .home-top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 32px;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .home-top-bar .app-title-adelia {
+            text-align: left;
+        }
+
+        .profile-avatar-placeholder {
+            width: 52px;
+            height: 52px;
+            background-color: var(--border-blue);
+            border: 2.5px solid var(--white);
+            border-radius: 50%;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+
+        .dashboard-header-block {
+            display: flex;
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+
+        .hero-welcome-card {
+            flex: 1.2;
+            background-color: rgba(255, 227, 236, 0.85); 
+            border: 2.5px solid var(--branding-pink);
+            border-radius: 20px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .hero-welcome-card h3 {
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 700;
+            font-size: 1.15rem;
+            line-height: 1.4;
+            color: var(--dark-text);
+            text-align: left;
+        }
+
+        .streak-counter-card {
+            flex: 1;
+            background-color: #FFFDEB;
+            border: 2.5px dashed var(--branding-pink);
+            border-radius: 20px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            box-shadow: 3px 3px 0 var(--white), 5px 5px 0 var(--light-pink);
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .streak-number {
+            font-family: 'Fredoka One', sans-serif;
+            font-size: 1.8rem;
+            color: var(--branding-pink);
+            line-height: 1.1;
+        }
+
+        .streak-label {
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--dark-text);
+            margin-top: 2px;
+        }
+
+        .section-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .section-label {
+            font-family: 'Fredoka One', sans-serif;
+            font-size: 1.1rem;
+            color: var(--branding-pink);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-shadow: 1px 1px 0px var(--white);
+            text-align: left;
+        }
+
+        .reroll-btn {
+            background-color: var(--white);
+            border: 2.5px solid var(--border-blue);
+            color: var(--dark-text);
+            font-size: 1.1rem;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 3px 0 var(--border-blue);
+            transition: all 0.1s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            padding-bottom: 2px; 
+        }
+
+        .reroll-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 var(--border-blue);
+        }
+
+        .wide-view-btn {
+            background-color: var(--white);
+            border: 2.5px solid var(--border-blue);
+            color: var(--dark-text);
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+            padding: 4px 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 3px 0 var(--border-blue);
+            transition: all 0.1s ease;
+        }
+
+        /* --- STABLE HORIZONTAL 4-COLUMN PERFECT SQUARE EMOTION GRID --- */
+        .mood-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 10px; 
+            margin-bottom: 24px;
+            width: 100%;
+        }
+
+        .mood-badge {
+            background-color: var(--white);
+            border: 2.5px solid var(--border-blue);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column; 
+            align-items: center;
+            justify-content: center; 
+            cursor: pointer;
+            box-shadow: 0 4px 0 var(--border-blue);
+            touch-action: manipulation;
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1; 
+            transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+            overflow: visible;
+        }
+
+        .mood-badge img {
+            width: 68px;
+            height: 68px;
+            max-width: 85%;
+            max-height: 70%;
+            object-fit: contain;
+            flex-shrink: 0;
+            margin-bottom: 12px; 
+            transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .mood-badge span {
+            position: absolute;
+            bottom: 8px;
+            left: 0;
+            right: 0;
+            font-size: 0.78rem;
+            font-weight: 800;
+            color: var(--dark-text);
+            font-family: 'Fredoka', sans-serif;
+            text-align: center;
+            line-height: 1;
+        }
+
+        /* --- UPDATED: GRADUATED USER PASTEL SELECTION RULES --- */
+        .mood-badge.select-Happy {
+            background-color: var(--pastel-happy);
+            border-color: #F5E9A8;
+            box-shadow: 0 4px 0 #F5E9A8;
+        }
+        .mood-badge.select-Cozy {
+            background-color: var(--pastel-cozy);
+            border-color: #F2E8B5;
+            box-shadow: 0 4px 0 #F2E8B5;
+        }
+        .mood-badge.select-Tired {
+            background-color: var(--pastel-tired);
+            border-color: #C6E0F2;
+            box-shadow: 0 4px 0 #C6E0F2;
+        }
+        .mood-badge.select-Awful {
+            background-color: var(--pastel-awful);
+            border-color: #B5D4E8;
+            box-shadow: 0 4px 0 #B5D4E8;
+        }
+
+        .mood-badge.selected img {
+            transform: scale(1.15) translateY(-3px);
+        }
+
+        .mood-badge.animating {
+            animation: bouncePop 0.3s ease forwards;
+        }
+
+        @keyframes bouncePop {
+            0% { transform: scale(1); }
+            35% { transform: scale(1.04); }
+            100% { transform: scale(1); }
+        }
+
+        /* --- HORIZONTAL COMPACT CALENDAR COMPONENT --- */
+        .compact-calendar-container {
+            background-color: rgba(255, 255, 255, 0.7);
+            border: 2.5px solid var(--light-pink);
+            border-radius: 22px;
+            padding: 14px;
+            margin-bottom: 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .calendar-strip-scroller {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 4px 2px 8px 2px;
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
+        }
+
+        .calendar-strip-scroller::-webkit-scrollbar {
+            height: 0px;
+        }
+
+        .cal-day-node {
+            flex: 0 0 58px;
+            height: 82px;
+            background-color: var(--white);
+            border: 2.5px solid var(--border-blue);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 3px 0 var(--border-blue);
+            position: relative;
+            transition: all 0.15s ease;
+        }
+
+        .cal-day-node .day-lbl {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--meta-gray);
+            text-transform: uppercase;
+        }
+
+        .cal-day-node .num-lbl {
+            font-family: 'Fredoka One', sans-serif;
+            font-size: 1.15rem;
+            margin-top: 1px;
+            color: var(--dark-text);
+        }
+
+        .cal-day-node .mood-dot-marker {
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 4px;
+        }
+
+        .cal-day-node .mood-dot-marker img {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+        }
+
+        .cal-day-node.active-today {
+            border-color: var(--branding-pink);
+            background-color: #FFF5F8;
+            box-shadow: 0 3px 0 var(--branding-pink);
+        }
+
+        .cal-day-node.active-today .day-lbl {
+            color: var(--branding-pink);
+        }
+
+        .cal-day-node.selected-date {
+            border-color: var(--polka-pink);
+            background-color: #FFFDF0;
+        }
+
+        .cal-day-node.future-locked {
+            opacity: 0.45;
+            background-color: #FDF9FB;
+            border-color: #E2D5DA;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+        .cal-day-node.future-locked .num-lbl, 
+        .cal-day-node.future-locked .day-lbl {
+            color: #C1AFB6;
+        }
+
+        .calendar-strip-scroller.full-wide-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            overflow-x: hidden;
+            gap: 12px;
+            padding-bottom: 4px;
+        }
+        .calendar-strip-scroller.full-wide-grid .cal-day-node {
+            flex: none;
+            width: 100%;
+        }
+
+        /* --- REST OF THE UTILITY ELEMENTS --- */
+        .recommend-action-box {
+            background-color: var(--white);
+            border: 2.5px solid var(--pastel-pink);
+            border-radius: 20px;
+            padding: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            gap: 12px;
+        }
+
+        .recommend-text-side {
+            text-align: left;
+        }
+
+        .recommend-card-tag {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--white);
+            background-color: var(--branding-pink);
+            padding: 3px 10px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-bottom: 6px;
+        }
+
+        .recommend-text-side h4 {
+            font-size: 1rem;
+            line-height: 1.3;
+            color: var(--dark-text);
+        }
+
+        .action-circle-go {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: var(--ice-blue);
+            border: 2.5px solid var(--border-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            flex-shrink: 0;
+            box-shadow: 0 3px 0 var(--border-blue);
+        }
+
+        .journal-composer {
+            background-color: var(--white);
+            border: 2.5px solid var(--border-blue);
+            border-radius: 22px;
+            padding: 18px;
+            margin-bottom: 24px;
+        }
+
+        .journal-input {
+            width: 100%;
+            height: 85px;
+            border: none;
+            resize: none;
+            outline: none;
+            font-size: 1.05rem;
+            color: var(--dark-text);
+            line-height: 28px;
+            padding: 2px 4px;
+            background: repeating-linear-gradient(transparent, transparent 26px, #BCEEFA 26px, #BCEEFA 28px);
+            -webkit-appearance: none;
+            user-select: text !important;
+            -webkit-user-select: text !important;
+        }
+
+        .keep-btn {
+            background-color: var(--white);
+            border: 2.5px solid var(--branding-pink);
+            color: var(--branding-pink);
+            font-family: 'Fredoka One', sans-serif;
+            font-size: 0.9rem;
+            padding: 6px 18px;
+            border-radius: 14px;
+            cursor: pointer;
+            box-shadow: 2px 2px 0 var(--branding-pink);
+        }
+
+        .journal-feed {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .feed-item {
+            background-color: rgba(255, 255, 255, 0.96);
+            border-left: 6px solid var(--branding-pink);
+            border-radius: 4px 16px 16px 4px;
+            padding: 16px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.01);
+            text-align: left;
+        }
+
+        .feed-meta {
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .feed-text {
+            font-size: 1rem;
+            line-height: 1.4;
+        }
+
+        .feed-text img {
+            width: 22px;
+            height: 22px;
+            vertical-align: middle;
+            margin-right: 4px;
+        }
+
+        /* ==========================================
+           PAGE 4: MOOD ANALYTICS SCREEN
+           ========================================== */
+        #screen-analytics {
+            padding: 40px 0 0 0;
+            background-color: #FFFBFD;
+        }
+
+        .analytics-scroll-container {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 0 32px 60px 32px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .analytics-scroll-container::-webkit-scrollbar {
+            width: 0px;
+        }
+
+        .vibe-hero-card {
+            background-color: var(--ice-blue);
+            border: 2.5px solid var(--border-blue);
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 35px;
+            text-align: center;
+            box-shadow: 0 6px 0 var(--border-blue);
+        }
+
+        .vibe-hero-card span {
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: block;
+        }
+
+        .vibe-badge-title {
+            font-family: 'Fredoka One', sans-serif;
+            font-size: 2.1rem;
+            color: var(--branding-pink);
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .vibe-badge-title img {
+            width: 64px;
+            height: 64px;
+            object-fit: contain;
+        }
+
+        .stat-bar-container {
+            background-color: var(--white);
+            border: 2.5px solid var(--light-pink);
+            border-radius: 22px;
+            padding: 22px 20px;
+            margin-bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .stat-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .stat-label-with-img {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-label-with-img img {
+            width: 44px;
+            height: 44px;
+            object-fit: contain;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 12px;
+            background-color: #FFF5F8;
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+            margin-top: 8px;
+            border: 1px solid var(--light-pink);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--branding-pink);
+            width: 0%;
+            transition: width 0.5s ease-out;
+            border-radius: 6px;
+        }
+
+        /* --- STICKY BOTTOM NAVIGATION BAR --- */
+        .bottom-nav-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 85px;
+            background-color: rgba(255, 255, 255, 0.98);
+            border-top: 3px dotted var(--light-pink);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: 15px;
+            z-index: 900;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--polka-pink);
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            color: var(--branding-pink);
+        }
+
+        .nav-icon-img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            margin-bottom: 4px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="viewport-wrapper">
+
+        <!-- ==========================================
+           PAGE 1: ONBOARDING SCREEN
+           ========================================== */ -->
+        <div id="screen-onboarding" class="app-screen active">
+            <div class="onboarding-slider" id="swipe-zone">
+                <div class="slide-content active" id="slide-1">
+                    <div class="avatar-blink-container">
+                        <img src="noblink.PNG" alt="Character Base" class="avatar-layer normal">
+                        <img src="blinking.PNG" alt="Character Blink" class="avatar-layer blinking">
+                    </div>
+                    <h2 class="app-title-adelia">CozyMind<br><span style="font-size:1.3rem; color:var(--dark-text); font-family:'Fredoka'; font-weight:700;">Your Safe Space</span></h2>
+                    <p style="margin-top: 10px;">Welcome to your digital sanctuary. Swipe or click to review our custom features.</p>
+                </div>
+                <div class="slide-content" id="slide-2">
+                    <div class="placeholder-illustration" style="background-color: #FFFDEB; border-color: #FFF2F6;">
+                        [ Mood Tracker Graphics 🧠 ]
+                    </div>
+                    <h2 style="font-family:'Fredoka One', sans-serif; color:var(--branding-pink); text-align:center;">Track Your Rhythm</h2>
+                    <p style="margin-top: 10px;">Log your current inner climate with a single tap. Look back at your weekly mood patterns safely.</p>
+                </div>
+                <div class="slide-content" id="slide-3">
+                    <div class="placeholder-illustration" style="background-color: var(--light-pink); border-color: var(--pastel-pink);">
+                        [ Notebook Illustration ✍️ ]
+                    </div>
+                    <h2 style="font-family:'Fredoka One', sans-serif; color:var(--branding-pink); text-align:center;">Release Thoughts</h2>
+                    <p style="margin-top: 10px;">Pour your feelings onto the lines whenever you need to release weight. Your entries are stored locally.</p>
+                </div>
+            </div>
+            <div class="onboarding-controls">
+                <div class="dot-indicators">
+                    <div class="dot active" id="dot-1"></div>
+                    <div class="dot" id="dot-2"></div>
+                    <div class="dot" id="dot-3"></div>
+                </div>
+                <button class="nav-arrow-btn" id="next-slide-btn" onclick="handleNextSlide()">➔</button>
+            </div>
+        </div>
+
+        <!-- ==========================================
+           PAGE 2: LOGIN SCREEN
+           ========================================== */ -->
+        <div id="screen-login" class="app-screen">
+            <div class="login-header">
+                <span>🌸</span>
+                <h2>Welcome Back!</h2>
+            </div>
+            <div class="login-card">
+                <div class="input-group">
+                    <input type="email" class="cozy-input" placeholder="Email Address">
+                </div>
+                <div class="input-group">
+                    <input type="password" class="cozy-input" placeholder="Password">
+                </div>
+                <button class="cozy-btn" onclick="handleAppLogin()">Enter Sanctuary</button>
+                <div class="login-links">
+                    <a onclick="alert('Link sent!')">Forgot Password?</a>
+                    <a style="color:var(--dark-text)">New here? <span style="color: var(--branding-pink)" onclick="navigateTo('screen-onboarding')">Create Account</span></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==========================================
+           PAGE 3: HOME SCREEN (MAIN APP SANCTUARY)
+           ========================================== */ -->
+        <div id="screen-home" class="app-screen">
+            <div style="flex-shrink: 0; width: 100%;">
+                <div class="home-top-bar">
+                    <h2 class="app-title-adelia" style="font-size: 2rem;">CozyMind</h2>
+                    <div class="profile-avatar-placeholder"></div>
+                </div>
+            </div>
+
+            <div class="home-scroll-container">
+                
+                <!-- USER STREAK SUMMARY DASHBOARD -->
+                <div class="dashboard-header-block">
+                    <div class="hero-welcome-card">
+                        <h3 id="welcome-greeting">Hi there! ✨<br>Let's check in for today.</h3>
+                    </div>
+                    <div class="streak-counter-card" id="streak-card">
+                        <div class="streak-number" id="live-streak-counter">🔥 1</div>
+                        <div class="streak-label">Day Streak</div>
+                    </div>
+                </div>
+
+                <!-- STEP 1: HORIZONTAL 4-COLUMN MOOD PERFECT SQUARE DECK -->
+                <div class="section-label" style="margin-bottom: 12px;">1 // How are you right now?</div>
+                <div class="mood-grid">
+                    <div class="mood-badge" id="badge-Happy" onclick="logMood(this, 'Happy')"><img src="happy.PNG" alt="Happy"><span>Happy</span></div>
+                    <div class="mood-badge" id="badge-Cozy" onclick="logMood(this, 'Cozy')"><img src="cozy.PNG" alt="Cozy"><span>Cozy</span></div>
+                    <div class="mood-badge" id="badge-Tired" onclick="logMood(this, 'Tired')"><img src="tired.PNG" alt="Tired"><span>Tired</span></div>
+                    <div class="mood-badge" id="badge-Awful" onclick="logMood(this, 'Awful')"><img src="awful.PNG" alt="Awful"><span>Awful</span></div>
+                </div>
+
+                <!-- COMPACT VIEW CALENDAR MODULE -->
+                <div class="compact-calendar-container">
+                    <div class="section-header-row" style="margin-bottom: 0;">
+                        <div class="section-label" style="font-size: 0.95rem; color: var(--dark-text);" id="cal-month-title">Calendar Timeline</div>
+                        <button class="wide-view-btn" id="wide-toggle-btn" onclick="toggleCalendarWideView()">Full View 🗓️</button>
+                    </div>
+                    <div class="calendar-strip-scroller" id="mini-calendar-scroller">
+                        <!-- Generated Dynamically via JS Core Below -->
+                    </div>
+                </div>
+
+                <!-- STEP 2: ACTIVITY RECOMMENDATION SLOT -->
+                <div class="section-header-row">
+                    <div class="section-label">2 // Today's Mini Action</div>
+                    <button class="reroll-btn" onclick="rerollRecommendation()">↻</button>
+                </div>
+
+                <div class="recommend-action-box">
+                    <div class="recommend-text-side" id="activity-card">
+                        <span class="recommend-card-tag" id="rec-tag">Breathing</span>
+                        <h4 id="rec-title">5-Min Heart Rate Coherence</h4>
+                    </div>
+                    <div class="action-circle-go" onclick="alert('Starting your 5-min coherence window!')">➔</div>
+                </div>
+
+                <!-- STEP 3: LOG LOCAL THOUGHTS LINES -->
+                <div class="section-label" style="margin-bottom: 12px;">3 // Express & Release</div>
+                <div class="journal-composer">
+                    <textarea class="journal-input" id="journal-textarea" placeholder="Pour out any heavy thoughts onto the lines..."></textarea>
+                    <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
+                        <button class="keep-btn" onclick="saveJournalEntry()">Keep Safely</button>
+                    </div>
+                </div>
+
+                <!-- INTERACTIVE LIVE STREAM FEED MODULE -->
+                <div class="journal-feed" id="live-journal-feed">
+                    <!-- Dynamic check-ins will arrive here -->
+                </div>
+            </div>
+
+            <!-- BOTTOM APP NAVIGATION DECK -->
+            <div class="bottom-nav-bar">
+                <a class="nav-item active" onclick="navigateTo('screen-home')">
+                    <img src="home.PNG" alt="Home" class="nav-icon-img">
+                    <span>Home</span>
+                </a>
+                <a class="nav-item" onclick="navigateTo('screen-analytics')">
+                    <img src="analytics.PNG" alt="Analytics" class="nav-icon-img">
+                    <span>Analytics</span>
+                </a>
+                <a class="nav-item" onclick="navigateTo('screen-login')">
+                    <img src="acc.PNG" alt="Account" class="nav-icon-img">
+                    <span>Account</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- ==========================================
+           PAGE 4: MOOD ANALYTICS SCREEN
+           ========================================== */ -->
+        <div id="screen-analytics" class="app-screen">
+            <div style="flex-shrink: 0; width: 100%;">
+                <div class="home-top-bar">
+                    <h2 class="app-title-adelia" style="font-size: 2rem;">Vibe Insights</h2>
+                </div>
+            </div>
+
+            <div class="analytics-scroll-container">
+                <div class="vibe-hero-card">
+                    <span style="color: var(--dark-text);">Current Dominant Vibe</span>
+                    <div class="vibe-badge-title" id="dominant-vibe-display">None ✨</div>
+                </div>
+
+                <div class="section-label" style="margin-bottom: 14px;">Mood Allocation Tracker</div>
+                <div class="stat-bar-container">
+                    <div>
+                        <div class="stat-row">
+                            <span class="stat-label-with-img"><img src="happy.PNG" alt="Happy"> Happy</span>
+                            <span id="pct-Happy">0%</span>
+                        </div>
+                        <div class="progress-track"><div class="progress-fill" id="fill-Happy"></div></div>
+                    </div>
+                    <div>
+                        <div class="stat-row">
+                            <span class="stat-label-with-img"><img src="cozy.PNG" alt="Cozy"> Cozy</span>
+                            <span id="pct-Cozy">0%</span>
+                        </div>
+                        <div class="progress-track"><div class="progress-fill" id="fill-Cozy"></div></div>
+                    </div>
+                    <div>
+                        <div class="stat-row">
+                            <span class="stat-label-with-img"><img src="tired.PNG" alt="Tired"> Tired</span>
+                            <span id="pct-Tired">0%</span>
+                        </div>
+                        <div class="progress-track"><div class="progress-fill" id="fill-Tired"></div></div>
+                    </div>
+                    <div>
+                        <div class="stat-row">
+                            <span class="stat-label-with-img"><img src="awful.PNG" alt="Awful"> Awful</span>
+                            <span id="pct-Awful">0%</span>
+                        </div>
+                        <div class="progress-track"><div class="progress-fill" id="fill-Awful"></div></div>
+                    </div>
+                </div>
+
+                <div class="section-label" style="margin-bottom: 14px;">Realtime Pulse Stream</div>
+                <div class="journal-feed" id="analytics-pulse-stream">
+                    <div class="feed-item" style="border-left-color: var(--border-blue);">
+                        <div class="feed-meta" style="color: var(--border-blue);">Baseline Log</div>
+                        <div class="feed-text">San sanctuary application setup completed with localized dataset trackers initialized.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bottom-nav-bar">
+                <a class="nav-item" onclick="navigateTo('screen-home')">
+                    <img src="home.PNG" alt="Home" class="nav-icon-img">
+                    <span>Home</span>
+                </a>
+                <a class="nav-item active" onclick="navigateTo('screen-analytics')">
+                    <img src="analytics.PNG" alt="Analytics" class="nav-icon-img">
+                    <span>Analytics</span>
+                </a>
+                <a class="nav-item" onclick="navigateTo('screen-login')">
+                    <img src="acc.PNG" alt="Account" class="nav-icon-img">
+                    <span>Account</span>
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ==========================================
+       CORE ENGINE HANDLERS & SIMULATORS
+       ========================================== */ -->
+    <script>
+        // --- SFX ENGINE ---
+        const clickSfx = new Audio('Click.mp3');
+        document.addEventListener('click', () => {
+            clickSfx.currentTime = 0;
+            clickSfx.play().catch(e => console.log("SFX play prevented: interaction required first."));
+        });
+
+        let currentSlide = 1;
+        const totalSlides = 3;
+
+        const todayDateObj = new Date();
+        let selectedCalendarDayId = todayDateObj.getDate(); 
+        let isCalendarWideGrid = false;
+        
+        let runningStreakCount = 1;
+        let hasLoggedTodayCheckIn = false;
+
+        let historyMoodDatabase = {};
+        let moodDataset = [];
+
+        const moodImgMap = { 'Happy': 'happy.PNG', 'Cozy': 'cozy.PNG', 'Tired': 'tired.PNG', 'Awful': 'awful.PNG' };
+        
+        // --- UPDATED: DYNAMIC SCRIPT COLOR ASSIGNMENT ---
+        const moodColorMap = {
+            'Happy': 'var(--pastel-happy)',
+            'Cozy': 'var(--pastel-cozy)',
+            'Tired': 'var(--pastel-tired)',
+            'Awful': 'var(--pastel-awful)'
+        };
+
+        const alternateRecommendations = [
+            { tag: "Breathing", title: "5-Min Heart Rate Coherence" },
+            { tag: "Mindset", title: "Affirmations for Steady Boundaries" },
+            { tag: "Somatic", title: "Gentle Desk Stretch Release" },
+            { tag: "Creative", title: "3-Minute Color Palette Doodle" },
+            { tag: "Focus", title: "Ambient Lo-Fi Audio Isolation" }
+        ];
+        let currentRecIndex = 0;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            buildCalendarTimelineDeck();
+            updateStreakUI();
+            updateWelcomeGreeting();
+        });
+
+        function escapeHtml(text) {
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        // --- DYNAMIC TIME-BASED GREETING HANDLER ---
+        function updateWelcomeGreeting() {
+            const greetingEl = document.getElementById('welcome-greeting');
+            if (!greetingEl) return;
+            
+            const hours = new Date().getHours();
+            let greeting = "Hi there!";
+            
+            if (hours >= 5 && hours < 12) {
+                greeting = "Good morning!";
+            } else if (hours >= 12 && hours < 17) {
+                greeting = "Good afternoon!";
+            } else {
+                greeting = "Good evening!";
+            }
+            
+            greetingEl.innerHTML = `${greeting} ✨<br>Let's check in for today.`;
+        }
+
+        function handleAppLogin() {
+            navigateTo('screen-home');
+            updateStreakUI();
+            updateWelcomeGreeting();
+
+            setTimeout(() => {
+                const streakCard = document.getElementById('streak-card');
+                if (streakCard) {
+                    streakCard.style.transform = 'scale(1.08) rotate(2deg)';
+                    setTimeout(() => streakCard.style.transform = 'scale(1) rotate(0deg)', 220);
+                }
+            }, 300);
+        }
+
+        function buildCalendarTimelineDeck() {
+            const scroller = document.getElementById('mini-calendar-scroller');
+            if (!scroller) return;
+            scroller.innerHTML = '';
+
+            const currentMonthName = todayDateObj.toLocaleString('default', { month: 'long' });
+            document.getElementById('cal-month-title').innerText = `${currentMonthName} Timeline`;
+
+            const currentDayNumber = todayDateObj.getDate();
+            const daysInMonth = new Date(todayDateObj.getFullYear(), todayDateObj.getMonth() + 1, 0).getDate();
+
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dayDate = new Date(todayDateObj.getFullYear(), todayDateObj.getMonth(), d);
+                const stringDayLabel = dayDate.toLocaleString('default', { weekday: 'short' });
+
+                const node = document.createElement('div');
+                node.className = 'cal-day-node';
+                node.id = `cal-node-${d}`;
+
+                if (d === currentDayNumber) node.classList.add('active-today');
+                if (d === selectedCalendarDayId) node.classList.add('selected-date');
+
+                if (d > currentDayNumber) {
+                    node.classList.add('future-locked');
+                    node.setAttribute('title', 'Locked Future Window');
+                }
+
+                // Inject the exact tone color onto the cell block frame if logged
+                if (historyMoodDatabase[d]) {
+                    node.style.backgroundColor = moodColorMap[historyMoodDatabase[d].type];
+                    node.style.borderColor = 'rgba(0,0,0,0.05)';
+                }
+
+                let subDotHtml = `<div class="mood-dot-marker"></div>`;
+                if (historyMoodDatabase[d]) {
+                    subDotHtml = `<div class="mood-dot-marker"><img src="${historyMoodDatabase[d].img}" alt=""></div>`;
+                }
+
+                node.innerHTML = `
+                    <div class="day-lbl">${stringDayLabel}</div>
+                    <div class="num-lbl">${d}</div>
+                    ${subDotHtml}
+                `;
+
+                if (d <= currentDayNumber) {
+                    node.onclick = () => selectCalendarDateTarget(d);
+                } else {
+                    node.onclick = () => alert("You cannot edit or track future dates inside your workspace window! 🌸");
+                }
+
+                scroller.appendChild(node);
+            }
+
+            if (!isCalendarWideGrid) {
+                setTimeout(() => {
+                    const activeNode = document.getElementById(`cal-node-${currentDayNumber}`);
+                    if (activeNode) {
+                        scroller.scrollLeft = activeNode.offsetLeft - scroller.offsetWidth / 2 + activeNode.offsetWidth / 2;
+                    }
+                }, 100);
+            }
+        }
+
+        function toggleCalendarWideView() {
+            const scroller = document.getElementById('mini-calendar-scroller');
+            const toggleBtn = document.getElementById('wide-toggle-btn');
+            isCalendarWideGrid = !isCalendarWideGrid;
+
+            if (isCalendarWideGrid) {
+                scroller.classList.add('full-wide-grid');
+                toggleBtn.innerText = "Row View ➔";
+            } else {
+                scroller.classList.remove('full-wide-grid');
+                toggleBtn.innerText = "Full View 🗓️";
+                buildCalendarTimelineDeck(); 
+            }
+        }
+
+        function selectCalendarDateTarget(dayId) {
+            selectedCalendarDayId = dayId;
+            document.querySelectorAll('.cal-day-node').forEach(n => n.classList.remove('selected-date'));
+            
+            const selectedNode = document.getElementById(`cal-node-${dayId}`);
+            if (selectedNode) selectedNode.classList.add('selected-date');
+
+            // Reset active styles on badges
+            document.querySelectorAll('.mood-badge').forEach(badge => {
+                badge.classList.remove('selected', 'select-Happy', 'select-Cozy', 'select-Tired', 'select-Awful');
+            });
+
+            if (historyMoodDatabase[dayId]) {
+                const loggedMoodType = historyMoodDatabase[dayId].type;
+                const activeBadge = document.getElementById(`badge-${loggedMoodType}`);
+                if (activeBadge) {
+                    activeBadge.classList.add('selected', `select-${loggedMoodType}`);
+                }
+            }
+        }
+
+        function updateStreakUI() {
+            const counterEl = document.getElementById('live-streak-counter');
+            if (counterEl) {
+                counterEl.innerText = `🔥 ${runningStreakCount}`;
+            }
+        }
+
+        function rerollRecommendation() {
+            const card = document.getElementById('activity-card');
+            card.style.opacity = 0;
+            setTimeout(() => {
+                currentRecIndex = (currentRecIndex + 1) % alternateRecommendations.length;
+                const nextRec = alternateRecommendations[currentRecIndex];
+                document.getElementById('rec-tag').innerText = nextRec.tag;
+                document.getElementById('rec-title').innerText = nextRec.title;
+                card.style.opacity = 1;
+            }, 250);
+        }
+
+        function logMood(badgeElement, moodName) {
+            document.querySelectorAll('.mood-badge').forEach(badge => {
+                badge.classList.remove('selected', 'select-Happy', 'select-Cozy', 'select-Tired', 'select-Awful');
+            });
+
+            badgeElement.classList.add('selected', `select-${moodName}`);
+            badgeElement.classList.remove('animating');
+            void badgeElement.offsetWidth; 
+            badgeElement.classList.add('animating');
+
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12 || 12;
+            const timeStr = `${hours}:${minutes} ${ampm}`;
+
+            const activeTodayDate = now.getDate();
+            
+            if (selectedCalendarDayId === activeTodayDate && !hasLoggedTodayCheckIn) {
+                runningStreakCount++;
+                hasLoggedTodayCheckIn = true;
+                updateStreakUI();
+            }
+
+            historyMoodDatabase[selectedCalendarDayId] = { type: moodName, img: moodImgMap[moodName] };
+            buildCalendarTimelineDeck(); 
+
+            moodDataset.push({ type: moodName, time: timeStr });
+            
+            const stream = document.getElementById('analytics-pulse-stream');
+            if (stream) {
+                const newStreamCard = document.createElement('div');
+                newStreamCard.className = 'feed-item';
+                newStreamCard.style.borderLeftColor = 'var(--pastel-pink)';
+                newStreamCard.innerHTML = `
+                    <div class="feed-meta" style="color:var(--dark-text)">Tracked Day Slot ${selectedCalendarDayId} • ${timeStr}</div>
+                    <div class="feed-text"><img src="${moodImgMap[moodName]}" alt=""> Saved data entry profile cleanly into target status: <strong>${moodName}</strong>.</div>
+                `;
+                stream.insertBefore(newStreamCard, stream.firstChild);
+            }
+            calculateMetrics();
+
+            const streakCard = document.getElementById('streak-card');
+            if (streakCard) {
+                streakCard.style.transform = 'scale(1.08) rotate(2deg)';
+                setTimeout(() => streakCard.style.transform = 'scale(1) rotate(0deg)', 220);
+            }
+        }
+
+        function calculateMetrics() {
+            const total = moodDataset.length;
+            if (total === 0) return;
+
+            let counts = { Happy: 0, Cozy: 0, Tired: 0, Awful: 0 };
+            moodDataset.forEach(entry => { counts[entry.type]++; });
+
+            let maxCount = -1;
+            let dominantVibe = 'Cozy';
+
+            Object.keys(counts).forEach(key => {
+                const percentage = Math.round((counts[key] / total) * 100);
+                const pctEl = document.getElementById(`pct-${key}`);
+                const fillEl = document.getElementById(`fill-${key}`);
+                if (pctEl) pctEl.innerText = `${percentage}%`;
+                if (fillEl) fillEl.style.width = `${percentage}%`;
+
+                if (counts[key] > maxCount) {
+                    maxCount = counts[key];
+                    dominantVibe = key;
+                }
+            });
+            
+            const domDisplay = document.getElementById('dominant-vibe-display');
+            if (domDisplay) {
+                if (total > 0) {
+                    domDisplay.innerHTML = `<img src="${moodImgMap[dominantVibe]}" alt=""> ${dominantVibe}`;
+                } else {
+                    domDisplay.innerHTML = `None ✨`;
+                }
+            }
+        }
+
+        function handleNextSlide() {
+            if (currentSlide < totalSlides) {
+                changeSlide(currentSlide + 1);
+            } else {
+                changeSlide(1);
+                navigateTo('screen-login');
+            }
+        }
+
+        function changeSlide(targetSlide) {
+            document.getElementById(`slide-${currentSlide}`).classList.remove('active');
+            document.getElementById(`dot-${currentSlide}`).classList.remove('active');
+            currentSlide = targetSlide;
+            document.getElementById(`slide-${currentSlide}`).classList.add('active');
+            document.getElementById(`dot-${currentSlide}`).classList.add('active');
+            document.getElementById('next-slide-btn').innerText = (currentSlide === totalSlides) ? '✓' : '➔';
+        }
+
+        let touchStartX = 0;
+        let touchEndX = 0;
+        const swipeZone = document.getElementById('swipe-zone');
+
+        swipeZone.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+        swipeZone.addEventListener('touchend', e => { touchEndX = e.changedTouches[0].screenX; handleSwipeGesture(); }, { passive: true });
+
+        function handleSwipeGesture() {
+            if (touchStartX - touchEndX > 40) {
+                if (currentSlide < totalSlides) changeSlide(currentSlide + 1);
+                else navigateTo('screen-login');
+            } else if (touchEndX - touchStartX > 40) {
+                if (currentSlide > 1) changeSlide(currentSlide - 1);
+            }
+        }
+
+        function navigateTo(screenId) {
+            document.querySelectorAll('.app-screen').forEach(screen => screen.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            
+            const currentHomeScroll = document.querySelector('.home-scroll-container');
+            if (currentHomeScroll) currentHomeScroll.scrollTop = 0;
+            
+            const currentAnalyticsScroll = document.querySelector('.analytics-scroll-container');
+            if (currentAnalyticsScroll) currentAnalyticsScroll.scrollTop = 0;
+
+            if (screenId === 'screen-home') {
+                document.querySelectorAll('.bottom-nav-bar').forEach(bar => bar.querySelectorAll('.nav-item')[0].classList.add('active'));
+                buildCalendarTimelineDeck(); 
+            } else if (screenId === 'screen-analytics') {
+                document.querySelectorAll('.bottom-nav-bar').forEach(bar => bar.querySelectorAll('.nav-item')[1].classList.add('active'));
+            } else if (screenId === 'screen-login') {
+                document.querySelectorAll('.bottom-nav-bar').forEach(bar => bar.querySelectorAll('.nav-item')[2].classList.add('active'));
+            }
+        }
+
+        function saveJournalEntry() {
+            const txtArea = document.getElementById('journal-textarea');
+            const entryText = txtArea.value.trim();
+            if (!entryText) return;
+
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12 || 12;
+            const currentTimestamp = `${hours}:${minutes} ${ampm}`;
+
+            const feedContainer = document.getElementById('live-journal-feed');
+            if (feedContainer) {
+                const newCard = document.createElement('div');
+                newCard.className = 'feed-item';
+                newCard.innerHTML = `
+                    <div class="feed-meta" style="color: var(--branding-pink);">Saved Entry (Day ${selectedCalendarDayId}) • ${currentTimestamp}</div>
+                    <div class="feed-text">${escapeHtml(entryText)}</div>
+                `;
+                feedContainer.insertBefore(newCard, feedContainer.firstChild);
+            }
+            txtArea.value = "";
+            txtArea.blur(); 
+        }
+    </script>
+</body>
+</html>
